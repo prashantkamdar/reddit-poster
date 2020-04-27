@@ -1,7 +1,9 @@
 const request = require('request');
 const cheerio = require('cheerio');
+const redis = require('../redis');
 
 posts = [];
+persistenceResult = '';
 
 url = 'https://www.scnsrc.me/page/1/';
 
@@ -15,7 +17,7 @@ let options = {
     headers: headers
 };
 
-let getPosts = function(callback)  {
+let getPosts = function(callback) {
     request(options, function(error, response, html) {
         if (!error && response.statusCode == 200) {
 
@@ -23,11 +25,11 @@ let getPosts = function(callback)  {
 
             $("div[class='post']").each(function(i, post) {
 
+                persistenceResult = '';
+
                 name = $("h2 a", post).text();
-                //console.log(name);
 
                 tags = $("a[rel='category tag']", post).toArray().map(element => $(element).text());
-                //console.log(tags);
 
                 titles = $("p > strong", post)
                     .filter(function() {
@@ -36,14 +38,30 @@ let getPosts = function(callback)  {
                     .toArray()
                     .map(element => $(element).text());
 
+                redis.postExists(name, function(err, result1) {
+                    if (!err) {
+                        if (!result1) {
+                            redis.setPost(name, function(err, result2) {
+                                if (!err) {
+                                    persistenceResult = 'Post now set';
+                                }
+                            });
+                        } else {
+                            persistenceResult = 'Post already set';
+                        }
+                    }
+                });
+
                 posts.push({
                     "name": name,
                     "tags": tags,
-                    "titles": titles
+                    "titles": titles,
+                    "persistenceResult": persistenceResult
                 });
+
             });
 
-            callback(null, posts); 
+            callback(null, posts);
 
         } else {
             console.log("Error: " + error);
