@@ -18,13 +18,16 @@ let options = {
 };
 
 let getPosts = function(callback) {
-    request(options, function(error, response, html) {
+    request(options, async function(error, response, html) {
         if (!error && response.statusCode == 200) {
 
             let $ = cheerio.load(html);
 
-            $("div[class='post']").each(function(i, post) {
+            let allPosts = $("div[class='post']");
 
+            for (let i = 0; i < allPosts.length; i++) {
+
+                post = allPosts[i];
                 persistenceResult = '';
 
                 name = $("h2 a", post).text();
@@ -38,19 +41,14 @@ let getPosts = function(callback) {
                     .toArray()
                     .map(element => $(element).text());
 
-                redis.postExists(name, function(err, result1) {
-                    if (!err) {
-                        if (!result1) {
-                            redis.setPost(name, function(err, result2) {
-                                if (!err) {
-                                    persistenceResult = 'Post now set';
-                                }
-                            });
-                        } else {
-                            persistenceResult = 'Post already set';
-                        }
-                    }
-                });
+                let postExists = await redis.postExists(name);
+
+                if (!postExists) {
+                    //await redis.setPost(name);
+                    persistenceResult = 'Post not set';
+                } else {
+                    persistenceResult = 'Post already set';
+                }
 
                 posts.push({
                     "name": name,
@@ -58,8 +56,7 @@ let getPosts = function(callback) {
                     "titles": titles,
                     "persistenceResult": persistenceResult
                 });
-
-            });
+            }
 
             callback(null, posts);
 
