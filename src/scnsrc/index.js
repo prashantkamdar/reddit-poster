@@ -9,26 +9,9 @@ let headers = {
     'Cookie': '__cfduid=d3f1c963948cd66bab6de1c6e0ec8e4141587982689; cf_clearance=c9d0462d0720ac241daaf5e778bceb9ea9ba532d-1587982706-0-150; MintAcceptsCookies=1; MintUnique=1; MintUniqueDay=1587963600; MintUniqueWeek=1587877200; MintUniqueMonth=1585717200; MintUniqueLocation=1; __cf_bm=8c9ef3b483f2543a77de506d51094626ffd5288d-1587987784-1800-AYlY8TpPBhTTJfz6Z84bOejRFTWSwJa1AZiGcuJCpcWMY3vBQhgTEKcZ3qjBySf+dHwDsGciwUSdnLpHUyYcig6DMB5tmt++4O8kbPwdsEff; MintUniqueHour=1587985200'
 };
 
-let getPosts = function() {
+function something(options) {
     return new Promise((resolve, reject) => {
-
-        pageNumber = 0;
-        existsCounter = 0;
-        posts = [];
-
-        //while (existsCounter < 1){
-        pageNumber++;
-
-        url = url + pageNumber;
-
-        let options = {
-            url: url,
-            headers: headers
-        };
-
-        function something(){
-            return new Promise((resolve1, reject1) => {
-       request(options, async function(error, response, html) {
+        request(options, async function(error, response, html) {
             if (!error && response.statusCode == 200) {
 
                 let $ = cheerio.load(html);
@@ -54,37 +37,49 @@ let getPosts = function() {
                     let postExists = await redis.postExists(name);
 
                     if (!postExists) {
-                        //await redis.setPost(name);
-                        persistenceResult = 'Post not set';
-                        existsCounter = 0; //to find 3 consecutive existing posts
-                        console.log("adding: " + name);
+                        await redis.setPost(name);
+                        existsCounter = 0; //to find consecutive existing posts
                         posts.push({
                             "name": name,
                             "tags": tags,
-                            "titles": titles,
-                            "persistenceResult": persistenceResult
+                            "titles": titles
                         });
-
                     } else {
                         existsCounter++;
                     }
                 }
             } else {
-                reject1(error);
+                reject(error);
             }
-            resolve1();
+            resolve(existsCounter);
         });
     });
-        
-    }
+}
 
-    something()
-    .then(() => {resolve(posts);})
-    .catch((error) => {reject(error)});
+let getPosts = function() {
+    return new Promise(async (resolve, reject) => {
 
-    
-        //}
-        
+        pageNumber = 0;
+        existsCounter = 0;
+        posts = [];
+
+        do {
+
+            pageNumber++;
+            url = url + pageNumber;
+
+            let options = {
+                url: url,
+                headers: headers
+            };
+
+            existsCounter = await something(options);
+            console.log("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber);
+
+        } while (existsCounter < 3 && pageNumber < 2)
+
+        resolve(posts);
+
     });
 }
 
