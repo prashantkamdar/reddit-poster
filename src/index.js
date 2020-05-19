@@ -1,5 +1,13 @@
 const scnsrc = require('./scnsrc');
+const reddit = require('./reddit')
 
 scnsrc.getPosts()
-    .then((data) => {console.log(data); process.exit();})
-    .catch((error) => {console.log('Error:', error);});
+    .then((posts) => {
+        return reddit.post(posts);
+    })
+    .then(() => {
+        console.log("All done");
+    })
+    .catch((error) => {
+        console.log('Error:', error);
+    });
