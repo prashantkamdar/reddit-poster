@@ -2,17 +2,18 @@ const request = require('request');
 const redis = require('../redis');
 
 postURL = 'https://oauth.reddit.com/api/submit';
+tokenURL = 'https://www.reddit.com/api/v1/access_token';
 
 let headers = {
     'User-Agent': 'scnsrc-poster/0.1 by mrksaccount',
-    'Authorization': 'bearer '
+    'Authorization': 'bearer 492468867501-KWy6CX823ntO1tIo0G7zcXXy9qk'
 };
 
 let form = {
     sr: 'scnsrc',
     kind: 'self',
     title: '',
-    text: '',    
+    text: '',
     flair_id: ''
 };
 
@@ -50,19 +51,35 @@ function something(options, title){
     });
 }
 
+function newToken(){
+    return new Promise((resolve, reject) => {
+        console.log("starting to get new token");
+        console.log(process.env.REDDITUSERNAME);
+        resolve();
+    });
+}
+
 let post = function(posts){
     return new Promise(async (resolve, reject) => {
 
+        if(posts.length>0){        
+            //get new token            
+            await newToken();
+        }
+
+        posts = posts.reverse();
+        
         for (let i = 0; i < posts.length; i++) {
 
             title = form["title"] = posts[i]["name"];
             form["text"] = posts[i]["titles"].join("\n\n");
+            form["flair_id"] = "";
+            
             var tags = posts[i]["tags"];
-
-            var x = tags.map(element => flairs[element]);
+            var x = tags.filter(element => flairs[element] != undefined);
             if(x[0]){
-                form["flair_id"] = x[0]
-            } else {
+                form["flair_id"] = flairs[x[0]]
+            } else {                
                 console.log("No flair found");
             }
 

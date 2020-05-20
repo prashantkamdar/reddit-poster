@@ -2,7 +2,7 @@ const request = require('request');
 const cheerio = require('cheerio');
 const redis = require('../redis');
 
-url = 'https://www.scnsrc.me/page/';
+baseURL = 'https://www.scnsrc.me/page/';
 
 let headers = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0',
@@ -21,7 +21,9 @@ function something(options) {
                 for (let i = 0; i < allPosts.length; i++) {
 
                     post = allPosts[i];
-                    persistenceResult = '';
+                    
+                    name = '';
+                    tags = '';
 
                     name = $("h2 a", post).text();
 
@@ -63,9 +65,8 @@ let getPosts = function() {
         posts = [];
 
         do {
-
             pageNumber++;
-            url = url + pageNumber;
+            url = baseURL + pageNumber;
 
             let options = {
                 url: url,
@@ -78,7 +79,6 @@ let getPosts = function() {
         } while (existsCounter < 3 && pageNumber < 2)
 
         resolve(posts);
-
     });
 }
 
