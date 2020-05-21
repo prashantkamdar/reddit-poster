@@ -74,7 +74,7 @@ let getPosts = function() {
             };
 
             existsCounter = await something(options);
-            console.log("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber);
+            console.log("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber + ", posts.length: " + posts.length);
 
         } while (existsCounter < 3 && pageNumber < 2)
 

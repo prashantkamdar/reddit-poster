@@ -18,9 +18,7 @@ let postExists = function(postName) {
 
 let setPost = function(postName) {
     return new Promise((resolve, reject) => {
-        redisClient.set(postName, new Date().toLocaleString('sv', {
-            timeZoneName: 'short'
-        }), function(err, reply) {
+        redisClient.set(postName, (new Date(Date.now() + 19800000).toISOString().replace(/T/, ' ').replace(/\..+/, '')), function(err, reply) {
             if (!err) {
                 resolve(true);
             } else {

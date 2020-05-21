@@ -4,12 +4,11 @@ const redis = require('../redis');
 postURL = 'https://oauth.reddit.com/api/submit';
 tokenURL = 'https://www.reddit.com/api/v1/access_token';
 
-let headers = {
-    'User-Agent': 'scnsrc-poster/0.1 by mrksaccount',
-    'Authorization': 'bearer 492468867501-KWy6CX823ntO1tIo0G7zcXXy9qk'
+var postHeaders = {
+    'User-Agent': 'scnsrc-poster/0.1 by mrksaccount'
 };
 
-let form = {
+var postForm = {
     sr: 'scnsrc',
     kind: 'self',
     title: '',
@@ -53,46 +52,62 @@ function something(options, title){
 
 function newToken(){
     return new Promise((resolve, reject) => {
-        console.log("starting to get new token");
-        console.log(process.env.REDDITUSERNAME);
-        resolve();
+       
+        let tokenOptions = {
+            url: tokenURL,
+            headers: {'Authorization': 'Basic ' + process.env.APPHASH},
+            form: {grant_type: 'password', username: process.env.REDDITUSERNAME, password: process.env.REDDITPASSWORD},
+            method: 'POST'
+        };
+
+        request(tokenOptions, function(error, response, body) {
+            if(error){
+                console.log("Error getting token: " + error);
+                reject();
+            } else if (response.statusCode != 200) {
+                console.log("Bad response code getting token: " + response.statusCode);
+                reject();
+            } else {
+                var jsonBody = JSON.parse(body);
+                var token = jsonBody["access_token"];
+                postHeaders["Authorization"] = "bearer " + token;
+                resolve();
+            }
+        });
     });
 }
 
 let post = function(posts){
     return new Promise(async (resolve, reject) => {
 
-        if(posts.length>0){        
-            //get new token            
-            await newToken();
+        if(posts.length > 0){                    
+            await newToken(); //get new token
         }
 
         posts = posts.reverse();
         
         for (let i = 0; i < posts.length; i++) {
 
-            title = form["title"] = posts[i]["name"];
-            form["text"] = posts[i]["titles"].join("\n\n");
-            form["flair_id"] = "";
+            title = postForm["title"] = posts[i]["name"];
+            postForm["text"] = posts[i]["titles"].join("\n\n");
+            postForm["flair_id"] = "";
             
             var tags = posts[i]["tags"];
             var x = tags.filter(element => flairs[element] != undefined);
             if(x[0]){
-                form["flair_id"] = flairs[x[0]]
+                postForm["flair_id"] = flairs[x[0]]
             } else {                
                 console.log("No flair found");
-            }
+            }           
 
-            console.log(form);
-
-            let options = {
+            let postOptions = {
                 url: postURL,
-                headers: headers,
-                form: form,
+                headers: postHeaders,
+                form: postForm,
                 method: 'POST'
             };
 
-            await something(options, title);
+            await something(postOptions, title);
         }
 
         resolve();

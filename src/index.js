@@ -1,6 +1,6 @@
 const scnsrc = require('./scnsrc');
 const reddit = require('./reddit');
-const result = require('dotenv').config({path:'../.env'});
+require('dotenv').config();
 
 /*
 setInterval(function(){
