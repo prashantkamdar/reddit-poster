@@ -1,11 +1,16 @@
 version: '3'
 services:
-  redis: 
+  redis:
+    container_name: scnsrc-poster.redis
     image: redis:alpine3.14
     volumes:
     - ../scnsrc-db:/data
+    restart: always
   app:
     build: .
+    container_name: scnsrc-poster.app
+    image: scnsrc-poster.app
     env_file: ./src/.env
     depends_on:
       - redis
+    restart: always
