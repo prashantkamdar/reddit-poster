@@ -1,1 +1,1 @@
-scnsrc-poster
+Posting new posts from scnsrc.me website to /r/scnsrc
