@@ -1,6 +1,7 @@
 const request = require('request');
 const cheerio = require('cheerio');
 const redis = require('../redis');
+const logger = require('..logger');
 
 baseURL = 'https://www.scnsrc.me/page/';
 
@@ -84,7 +85,7 @@ let getPosts = function() {
             };
 
             existsCounter = await something(options);
-            console.log("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber + ", posts.length: " + posts.length);
+            logger.info("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber + ", posts.length: " + posts.length);
 
         } while (existsCounter < 3 && pageNumber < 2)
 

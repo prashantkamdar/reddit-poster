@@ -1,5 +1,6 @@
 const request = require('request');
 const redis = require('../redis');
+const logger = require('../logger');
 
 postURL = 'https://oauth.reddit.com/api/submit';
 tokenURL = 'https://www.reddit.com/api/v1/access_token';
@@ -26,22 +27,22 @@ let flairs = {
     applications: "e88d8c6a-8af8-11ea-b848-0ec29a19e18d"
 };
 
-function something(options, title, hash){
+function postToReddit(options, title, hash){
     return new Promise((resolve, reject) => {
         request(options, async function(error, response, body) {
             if(error){
-                console.log("Error posting on reddit: " + error);
+                logger.error("Error posting on reddit: " + error);
                 resolve();
             } else if (response.statusCode != 200) {
-                console.log("Bad response code posting on reddit: " + response.statusCode);
+                logger.error("Bad response code posting on reddit: " + response.statusCode);
                 resolve();
             } else {
                 var jsonBody = JSON.parse(body);
                 var postResult = jsonBody["success"];
                 if(!postResult){
-                    console.log("Reddit post error: " + JSON.stringify(jsonBody))
+                    logger.error("Reddit post error: " + JSON.stringify(jsonBody))
                 } else {
-                    console.log("Successfully posted: " + title);
+                    logger.info("Successfully posted");
                     await redis.setPost(hash);
                     resolve();
                 }
@@ -62,11 +63,11 @@ function newToken(){
 
         request(tokenOptions, function(error, response, body) {
             if(error){
-                console.log("Error getting token: " + error);
-                reject();
+                logger.error("Error getting token: " + error);
+                reject(error);
             } else if (response.statusCode != 200) {
-                console.log("Bad response code getting token: " + response.statusCode);
-                reject();
+                logger.error("Bad response code getting token: " + response.statusCode);
+                reject("Non 200 response");
             } else {
                 var jsonBody = JSON.parse(body);
                 var token = jsonBody["access_token"];
@@ -82,11 +83,12 @@ let post = function(posts){
 
         if(posts.length > 0){                    
             await newToken(); //get new token
+            logger.info("Got the token")
         }
 
         posts = posts.reverse();
         
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < posts.length; i++) {
 
             hash = posts[i]["hash"];
             title = postForm["title"] = posts[i]["story_title"];
@@ -98,7 +100,7 @@ let post = function(posts){
             if(x[0]){
                 postForm["flair_id"] = flairs[x[0]]
             } else {                
-                console.log("No flair found");
+                logger.info("No flair found for post " + title + " with hash " + hash);
             }           
 
             let postOptions = {
@@ -108,7 +110,8 @@ let post = function(posts){
                 method: 'POST'
             };
 
-            await something(postOptions, title, hash);
+            logger.info("Trying to post: " + title);
+            await postToReddit(postOptions, title, hash);
         }
 
         resolve();

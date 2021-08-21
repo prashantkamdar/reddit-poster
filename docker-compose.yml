@@ -10,7 +10,9 @@ services:
     build: .
     container_name: scnsrc-poster.app
     image: scnsrc-poster.app
-    env_file: ./src/.env
+    env_file: ./.env
+    volumes:
+    - ../scnsrc-logs:/logs
     depends_on:
       - redis
     restart: always

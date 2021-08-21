@@ -1,5 +1,6 @@
 const request = require('request');
 const redis = require('../redis');
+const logger = require('../logger');
 
 baseURL = 'https://www.newsblur.com/reader/feed/'+ process.env.FEEDID + '?page=';
 
@@ -7,11 +8,13 @@ let headers = {
     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0'
 };
 
-function something(options) {
+function getFromNewsBlur(options) {
     return new Promise((resolve, reject) => {
         request(options, async function(error, response) {
             if (!error && response.statusCode == 200) {
                 
+                logger.info(response.body);
+
                 var feed = JSON.parse(response.body);
                 var stories = feed.stories;
 
@@ -59,8 +62,8 @@ let getPosts = function() {
                 headers: headers
             };
 
-            existsCounter = await something(options);
-            console.log("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber + ", posts.length: " + posts.length);
+            existsCounter = await getFromNewsBlur(options);
+            logger.info("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber + ", posts.length: " + posts.length);
 
         } while (existsCounter < 3 && pageNumber < 2)
 
