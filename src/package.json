@@ -1,5 +1,5 @@
 {
-  "name": "scnrsc-poster",
+  "name": "scnsrc-poster",
   "version": "0.0.1",
   "description": "scnsrc poster",
   "main": "index.js",
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/prashantkamdar/scnrsc-poster.git"
+    "url": "git+https://github.com/prashantkamdar/scnsrc-poster.git"
   },
   "keywords": [
     "scnsrc"
@@ -16,9 +16,9 @@
   "author": "prashant kamdar",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/prashantkamdar/scnrsc-poster/issues"
+    "url": "https://github.com/prashantkamdar/scnsrc-poster/issues"
   },
-  "homepage": "https://github.com/prashantkamdar/scnrsc-poster#readme",
+  "homepage": "https://github.com/prashantkamdar/scnsrc-poster#readme",
   "dependencies": {
     "dotenv": "8.2.0",
     "redis": "3.1.1",

@@ -1,6 +1,12 @@
 version: '3'
 services:
-  redis-server: 
-    image: 'redis'
-  node-app:
+  redis: 
+    #build: redis/.
+    image: redis:alpine3.14
+    volumes:
+    - ../scnsrc-db:/data
+  app:
     build: .
+    env_file: ./src/.env
+    depends_on:
+      - redis

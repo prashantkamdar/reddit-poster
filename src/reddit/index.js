@@ -86,7 +86,7 @@ let post = function(posts){
 
         posts = posts.reverse();
         
-        for (let i = 0; i < posts.length; i++) {
+        for (let i = 0; i < 2; i++) {
 
             hash = posts[i]["hash"];
             title = postForm["title"] = posts[i]["story_title"];
