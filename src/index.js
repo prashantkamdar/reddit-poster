@@ -1,6 +1,6 @@
-const scnsrc = require('./scnsrc');
-const reddit = require('./reddit');
 require('dotenv').config();
+const reddit = require('./reddit');
+const newsblur = require('./newsblur');
 
 /*
 setInterval(function(){
@@ -22,7 +22,8 @@ setInterval(function(){
 //3660000 61minutes
 
 console.log("Started execution: " + (new Date(Date.now() + 19800000).toISOString().replace(/T/, ' ').replace(/\..+/, '')));
-scnsrc.getPosts()
+
+newsblur.getPosts()
 .then((posts) => {
     return reddit.post(posts);
 })

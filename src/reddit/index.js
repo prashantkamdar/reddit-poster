@@ -17,16 +17,16 @@ var postForm = {
 };
 
 let flairs = {
-    Music: "7ab9b580-8623-11ea-b75e-0e1a7bd21f19",
-    TV: "819bcb4a-8623-11ea-b1ce-0e04e2c11711",
-    Movies: "b1fdb1cc-8623-11ea-8daa-0eed5f094bd5",
+    music: "7ab9b580-8623-11ea-b75e-0e1a7bd21f19",
+    tv: "819bcb4a-8623-11ea-b1ce-0e04e2c11711",
+    movies: "b1fdb1cc-8623-11ea-8daa-0eed5f094bd5",
     eBooks: "c31f9de4-8623-11ea-8db4-0e7676c39295",
     FLAC: "e28a4594-8623-11ea-8b88-0e431b0aa83b",
-    Games: "d74a102c-8af8-11ea-96aa-0ea9c4b7f435",
-    Applications: "e88d8c6a-8af8-11ea-b848-0ec29a19e18d"
+    games: "d74a102c-8af8-11ea-96aa-0ea9c4b7f435",
+    applications: "e88d8c6a-8af8-11ea-b848-0ec29a19e18d"
 };
 
-function something(options, title){
+function something(options, title, hash){
     return new Promise((resolve, reject) => {
         request(options, async function(error, response, body) {
             if(error){
@@ -42,7 +42,7 @@ function something(options, title){
                     console.log("Reddit post error: " + JSON.stringify(jsonBody))
                 } else {
                     console.log("Successfully posted: " + title);
-                    await redis.setPost(title);
+                    await redis.setPost(hash);
                     resolve();
                 }
             }
@@ -88,8 +88,9 @@ let post = function(posts){
         
         for (let i = 0; i < posts.length; i++) {
 
-            title = postForm["title"] = posts[i]["name"];
-            postForm["text"] = posts[i]["titles"].join("\n\n");
+            hash = posts[i]["hash"];
+            title = postForm["title"] = posts[i]["story_title"];
+            postForm["text"] = posts[i]["story_title"];
             postForm["flair_id"] = "";
             
             var tags = posts[i]["tags"];
@@ -107,7 +108,7 @@ let post = function(posts){
                 method: 'POST'
             };
 
-            await something(postOptions, title);
+            await something(postOptions, title, hash);
         }
 
         resolve();

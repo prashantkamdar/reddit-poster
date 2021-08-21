@@ -5,8 +5,18 @@ const redis = require('../redis');
 baseURL = 'https://www.scnsrc.me/page/';
 
 let headers = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:75.0) Gecko/20100101 Firefox/75.0',
-    'Cookie': ''
+    'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0',
+    'Accept':'text/html, */*; q=0.01',
+    'Accept-Language':'en-US,en;q=0.5',
+    'Referer':'https//www.scnsrc.me/',
+    'X-Requested-With':'XMLHttpRequest',
+    'DNT':'1',
+    'Connection':'keep-alive',
+    'Cookie':'__cf_bm=0c8ec6e0dcf6a4fee611333e6bfcc7765eed13da-1629530850-1800-ARQabev26CfizgH+Vc12y9hxLcW62elYyCCQzXfeTnY8gNQ7f/3OrLKVqT27QUQB7ErLZOQ661I2QqWMsY3HQg4=; MintAcceptsCookies=1; MintUnique=1; MintUniqueDay=1629518400; MintUniqueWeek=1629000000; MintUniqueMonth=1627790400; MintUniqueLocation=1; infiniteScroll=auto; MintUniqueHour=1629529200; MintCrush=379937858',
+    'Sec-Fetch-Dest':'empty',
+    'Sec-Fetch-Mode':'cors',
+    'Sec-Fetch-Site':'same-origin',
+    'TE':'trailers'
 };
 
 function something(options) {

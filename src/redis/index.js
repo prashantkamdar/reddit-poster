@@ -1,8 +1,8 @@
 const redisClient = require('./client');
 
-let postExists = function(postName) {
+let postExists = function(hash) {
     return new Promise((resolve, reject) => {
-        redisClient.exists(postName, function(err, reply) {
+        redisClient.exists(hash, function(err, reply) {
             if (!err) {
                 if (reply === 1) {
                     resolve(true);
@@ -16,9 +16,9 @@ let postExists = function(postName) {
     });
 };
 
-let setPost = function(postName) {
+let setPost = function(hash) {
     return new Promise((resolve, reject) => {
-        redisClient.set(postName, (new Date(Date.now() + 19800000).toISOString().replace(/T/, ' ').replace(/\..+/, '')), function(err, reply) {
+        redisClient.set(hash, (new Date(Date.now() + 19800000).toISOString().replace(/T/, ' ').replace(/\..+/, '')), function(err, reply) {
             if (!err) {
                 resolve(true);
             } else {
