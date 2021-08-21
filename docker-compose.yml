@@ -1,7 +1,6 @@
 version: '3'
 services:
   redis: 
-    #build: redis/.
     image: redis:alpine3.14
     volumes:
     - ../scnsrc-db:/data
