@@ -17,7 +17,7 @@ setInterval(function(){
     .catch((error) => {
         logger.error('Error:', error);
     });
-}, 60000);
+}, 3660000);
 
 
 //3660000 61minutes
