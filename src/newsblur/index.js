@@ -2,7 +2,7 @@ const request = require('request');
 const redis = require('../redis');
 const logger = require('../logger');
 
-baseURL = 'https://www.newsblur.com/reader/feed/'+ process.env.FEEDID + '?page=';
+let baseURL = 'https://www.newsblur.com/reader/feed/'+ process.env.FEEDID + '?page=';
 
 let headers = {
     'User-Agent':'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101 Firefox/91.0'
@@ -23,6 +23,7 @@ function getFromNewsBlur(options) {
                     hash = story.story_hash;
                     story_title = story.story_title;
                     tags = story.story_tags;
+                    image = story.image_urls[0];
 
                     let postExists = await redis.postExists(hash);
 
@@ -31,7 +32,8 @@ function getFromNewsBlur(options) {
                         posts.push({
                             "story_title": story_title,
                             "tags": tags,
-                            "hash": hash
+                            "hash": hash,
+                            "image": image
                         });
                     } else {
                         existsCounter++;
@@ -66,7 +68,7 @@ let getPosts = function() {
             logger.info("existsCounter: " + existsCounter + ", pageNumber: " + pageNumber + ", posts.length: " + posts.length);
 
         } while (existsCounter < 3 && pageNumber < 2)
-
+        
         resolve(posts);
     });
 }
