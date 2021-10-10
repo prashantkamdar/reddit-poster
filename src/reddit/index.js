@@ -11,7 +11,7 @@ var postHeaders = {
 };
 
 var postForm = {
-    sr: 'maliciousintentions',
+    sr: 'scnsrc',
     kind: '',
     title: '',
     text: '',
@@ -101,7 +101,7 @@ let post = function(posts){
             var tags = posts[i]["tags"];
             var x = tags.filter(element => flairs[element] != undefined);
             if(x[0]){
-                //postForm["flair_id"] = flairs[x[0]];
+                postForm["flair_id"] = flairs[x[0]];
             } else {                
                 logger.info("No flair found for post " + title + " with hash " + hash);
             }
